@@ -26,6 +26,9 @@ namespace LeagueRecorder.Windows.Recording
                                                      .PostAsync("/summoner/ajax/spectator/", content)
                                                      .ConfigureAwait(false);
 
+            if (response.IsSuccessStatusCode == false)
+                return Option.None;
+
             Option<string> gameId = await this.ExtractGameIdFromResponse(response).ConfigureAwait(false);
 
             if (gameId.IsEmpty)
@@ -40,6 +43,10 @@ namespace LeagueRecorder.Windows.Recording
             HttpResponseMessage response = await this.CreateClient(match.Region)
                                                      .GetAsync(string.Format("/summoner/ajax/requestRecording.json/gameId={0}", match.GameId))
                                                      .ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode == false)
+                return Option.None;
+
             string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var responseObject = JObject.Parse(responseText);
 
@@ -54,7 +61,11 @@ namespace LeagueRecorder.Windows.Recording
                                                      .GetAsync(string.Format("/match/observer/id={0}", match.GameId))
                                                      .ConfigureAwait(false);
 
-            return Option.None;
+            if (response.IsSuccessStatusCode == false)
+                return Option.None;
+
+            string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return Option.From(responseText);
         }
         #endregion
 
