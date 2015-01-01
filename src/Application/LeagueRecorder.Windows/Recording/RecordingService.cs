@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Castle.Core.Logging;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Abstractions.Recording;
 using LiteGuard;
@@ -13,8 +14,12 @@ namespace LeagueRecorder.Windows.Recording
 {
     public class RecordingService : IRecordingService
     {
+        #region Logging
+        public ILogger Logger { get; set; }
+        #endregion
+
         #region Methods
-        public async Task<Option<MatchInfo>> GetCurrentGameIdFromUserAsync(User user)
+        public async Task<MatchInfo> GetCurrentMatchInfoFromUserAsync(User user)
         {
             Guard.AgainstNullArgument("user", user);
             Guard.AgainstNullArgumentProperty("user", "Username", user.Username);
@@ -25,47 +30,39 @@ namespace LeagueRecorder.Windows.Recording
             HttpResponseMessage response = await this.CreateClient(user.Region)
                                                      .PostAsync("/summoner/ajax/spectator/", content)
                                                      .ConfigureAwait(false);
+            string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode == false)
-                return Option.None;
+            {
+                this.Logger.ErrorFormat("Error while getting the current match info from the user {0}.{1}{2}", user, Environment.NewLine, responseText);
+                return null;
+            }
 
-            Option<string> gameId = await this.ExtractGameIdFromResponse(response).ConfigureAwait(false);
+            string gameId = await this.ExtractGameIdFromResponse(responseText).ConfigureAwait(false);
 
-            if (gameId.IsEmpty)
-                return Option.None;
+            if (gameId == null)
+                return null;
 
-            return Option.From(new MatchInfo(gameId.Value, user.Region));
+            return new MatchInfo(gameId, user.Region);
         }
-        public async Task<Option<bool>> RequestRecordingOfGameAsync(MatchInfo match)
+        public async Task<bool> RequestRecordingOfMatchAsync(MatchInfo match)
         {
             Guard.AgainstNullArgument("match", match);
 
             HttpResponseMessage response = await this.CreateClient(match.Region)
                                                      .GetAsync(string.Format("/summoner/ajax/requestRecording.json/gameId={0}", match.GameId))
                                                      .ConfigureAwait(false);
+            string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode == false)
-                return Option.None;
+            { 
+                this.Logger.ErrorFormat("Error while requesting to record the match {0}.{1}{2}", match, Environment.NewLine, responseText);
+                return false;
+            }
 
-            string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var responseObject = JObject.Parse(responseText);
 
-            return Option.From(responseObject.Value<bool>("success"));
-        }
-
-        public async Task<Option<string>> GetCommandsToStartSpectatingAsync(MatchInfo match)
-        {
-            Guard.AgainstNullArgument("match", match);
-
-            HttpResponseMessage response = await this.CreateClient(match.Region)
-                                                     .GetAsync(string.Format("/match/observer/id={0}", match.GameId))
-                                                     .ConfigureAwait(false);
-
-            if (response.IsSuccessStatusCode == false)
-                return Option.None;
-
-            string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return Option.From(responseText);
+            return responseObject.Value<bool>("success");
         }
         #endregion
 
@@ -87,18 +84,20 @@ namespace LeagueRecorder.Windows.Recording
         /// Tries to extract the game-id from the specified <paramref name="response"/>.
         /// </summary>
         /// <param name="response">The response.</param>
-        private async Task<Option<string>> ExtractGameIdFromResponse(HttpResponseMessage response)
+        private async Task<string> ExtractGameIdFromResponse(string response)
         {
             Guard.AgainstNullArgument("response", response);
 
-            string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            Match match = Regex.Match(responseText, @"/match/observer/id=(\d*)");
+            Match match = Regex.Match(response, @"/match/observer/id=(\d*)");
 
             if (match.Success == false)
-                return Option.None;
+            {
+                this.Logger.ErrorFormat("Could not extract the game-id from the response.{0}{1}", Environment.NewLine, response);
+                return null;
+            }
 
-            return Option.From(match.Groups[1].Value);
+            this.Logger.DebugFormat("Found match-id {0}", match.Groups[1].Value);
+            return match.Groups[1].Value;
         }
         #endregion
     }

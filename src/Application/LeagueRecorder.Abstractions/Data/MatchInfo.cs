@@ -10,5 +10,10 @@
 
         public string GameId { get; private set; }
         public Region Region { get; private set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} ({1})", this.GameId, this.Region.GetAbbreviation());
+        }
     }
 }

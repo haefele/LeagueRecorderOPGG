@@ -21,6 +21,38 @@ namespace LeagueRecorder.Abstractions.Data
     public static class RegionExtensions
     {
         /// <summary>
+        /// Returns the abbreviation for the specified <paramref name="region"/>.
+        /// </summary>
+        /// <param name="region">The region.</param>
+        public static string GetAbbreviation(this Region region)
+        {
+            switch (region)
+            {
+                case Region.Korea:
+                    return "KR";
+                case Region.NorthAmerica:
+                    return "NA";
+                case Region.EuropeWest:
+                    return "EUW";
+                case Region.EuropeNordic:
+                    return "EUNE";
+                case Region.Oceania:
+                    return "OCE";
+                case Region.Brazil:
+                    return "BR";
+                case Region.LAS:
+                    return "LAS";
+                case Region.LAN:
+                    return "LAN";
+                case Region.Russia:
+                    return "RU";
+                case Region.Turkey:
+                    return "TR";
+                default:
+                    throw new ArgumentOutOfRangeException("region");
+            }
+        }
+        /// <summary>
         /// Returns the base URI for the specified <paramref name="region"/>.
         /// </summary>
         /// <param name="region">The region.</param>

@@ -9,31 +9,35 @@ namespace LeagueRecorder.TestConsole
     {
         static void Main(string[] args)
         {
-            while(true)
+            //while(true)
             {
                 var recordingService = new RecordingService();
                 var spectatorService = new SpectatorService();
-                
-                var matchInfo = new MatchInfo("1895547193", Region.EuropeWest);
+
+                var matchInfo = new MatchInfo("1899597404", Region.EuropeWest);
                 var commands = recordingService.GetCommandsToStartSpectatingAsync(matchInfo).Result;
 
                 spectatorService.ExecuteSpectatorCommandsAsync(commands.Value).Wait();
+                //Console.Write("Username: ");
+                //var user = new User
+                //{
+                //    Region = Region.EuropeWest,
+                //    Username = Console.ReadLine()
+                //};
+                //Option<MatchInfo> currentGameResult = recordingService.GetCurrentMatchInfoFromUserAsync(user).Result;
 
-                var user = new User
-                {
-                    Region = Region.EuropeWest,
-                    Username = "haefele"
-                };
-                Option<MatchInfo> currentGameResult = recordingService.GetCurrentGameIdFromUserAsync(user).Result;
+                //if (currentGameResult.HasValue)
+                //{
+                //    Console.WriteLine("Found game " + currentGameResult.Value.GameId);
+                //    Option<bool> requestRecordingResult = recordingService.RequestRecordingOfMatchAsync(currentGameResult.Value).Result;
 
-                if (currentGameResult.HasValue)
-                {
-                    Console.WriteLine("Found game " + currentGameResult.Value.GameId);
-                    Option<bool> requestRecordingResult = recordingService.RequestRecordingOfGameAsync(currentGameResult.Value).Result;
-                }
-
-                Console.WriteLine("Done");
-                Console.ReadLine();
+                //    if (requestRecordingResult.HasValue && requestRecordingResult.Value)
+                //        Console.WriteLine("Recording requested.");
+                //}
+                //else
+                //{
+                //    Console.WriteLine("No game found.");
+                //}
             }
         }
     }

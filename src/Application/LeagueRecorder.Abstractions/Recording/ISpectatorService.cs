@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
+using LeagueRecorder.Abstractions.Data;
 using NeverNull;
 
 namespace LeagueRecorder.Abstractions.Recording
 {
     public interface ISpectatorService : IService
     {
-        Task ExecuteSpectatorCommandsAsync(string commands);
+        Task<bool> SpectateMatchAsync(MatchInfo match);
     }
 }
