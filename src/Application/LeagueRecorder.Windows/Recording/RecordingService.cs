@@ -14,8 +14,22 @@ namespace LeagueRecorder.Windows.Recording
 {
     public class RecordingService : IRecordingService
     {
-        #region Logging
+        #region Properties
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
         public ILogger Logger { get; set; }
+        #endregion
+
+
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecordingService"/> class.
+        /// </summary>
+        public RecordingService()
+        {
+            this.Logger = NullLogger.Instance;
+        }
         #endregion
 
         #region Methods
@@ -38,12 +52,16 @@ namespace LeagueRecorder.Windows.Recording
                 return null;
             }
 
-            string gameId = await this.ExtractGameIdFromResponse(responseText).ConfigureAwait(false);
+            string gameId = this.ExtractGameIdFromResponse(responseText);
 
             if (gameId == null)
                 return null;
 
-            return new MatchInfo(gameId, user.Region);
+            return new MatchInfo
+            {
+                GameId = gameId,
+                Region = user.Region
+            };
         }
         public async Task<bool> RequestRecordingOfMatchAsync(MatchInfo match)
         {
@@ -84,7 +102,7 @@ namespace LeagueRecorder.Windows.Recording
         /// Tries to extract the game-id from the specified <paramref name="response"/>.
         /// </summary>
         /// <param name="response">The response.</param>
-        private async Task<string> ExtractGameIdFromResponse(string response)
+        private string ExtractGameIdFromResponse(string response)
         {
             Guard.AgainstNullArgument("response", response);
 

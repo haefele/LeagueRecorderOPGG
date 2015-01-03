@@ -1,6 +1,9 @@
 ﻿using System;
+using Akavache;
 using LeagueRecorder.Abstractions.Data;
+using LeagueRecorder.Windows.Properties;
 using LeagueRecorder.Windows.Recording;
+using LeagueRecorder.Windows.Storage;
 using NeverNull;
 
 namespace LeagueRecorder.TestConsole
@@ -9,15 +12,23 @@ namespace LeagueRecorder.TestConsole
     {
         static void Main(string[] args)
         {
+            BlobCache.ApplicationName = "LeagueRecorderOPGG";
+            var service = new UserStorage(BlobCache.UserAccount, new IdentityGenerator());
+            
+            var users = service.GetUsersAsync().Result;
+            service.AddUserAsync(new User {Region = Region.EuropeWest, Username = "haefele"}).Wait();
+            
             //while(true)
             {
-                var recordingService = new RecordingService();
                 var spectatorService = new SpectatorService();
 
-                var matchInfo = new MatchInfo("1899597404", Region.EuropeWest);
-                var commands = recordingService.GetCommandsToStartSpectatingAsync(matchInfo).Result;
+                var matchInfo = new MatchInfo
+                {
+                    GameId = "1899597404",
+                    Region = Region.EuropeWest
+                };
+                spectatorService.SpectateMatchAsync(matchInfo).Wait();
 
-                spectatorService.ExecuteSpectatorCommandsAsync(commands.Value).Wait();
                 //Console.Write("Username: ");
                 //var user = new User
                 //{
