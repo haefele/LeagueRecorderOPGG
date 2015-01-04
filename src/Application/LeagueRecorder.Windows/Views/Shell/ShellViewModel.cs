@@ -14,69 +14,74 @@ namespace LeagueRecorder.Windows.Views.Shell
     public class ShellViewModel : ReactiveScreen
     {
         #region Fields
-        private readonly IUserStorage _userStorage;
+        private readonly IPlayerStorage _playerStorage;
 
-        private ObservableAsPropertyHelper<ReactiveObservableCollection<User>> _users;
-        private User _selectedUser;
+        private ObservableAsPropertyHelper<ReactiveObservableCollection<Player>> _players;
+        private Player _selectedPlayer;
         #endregion
 
         #region Properties
-        public ReactiveCommand<ReactiveObservableCollection<User>> LoadUsers { get; private set; }
-        public ReactiveCommand<object> NewUser { get; private set; }
-        public ReactiveCommand<object> DeleteUser { get; private set; } 
+        public ReactiveCommand<ReactiveObservableCollection<Player>> LoadPlayers { get; private set; }
+        public ReactiveCommand<object> NewPlayer { get; private set; }
+        public ReactiveCommand<object> DeletePlayer { get; private set; } 
 
-        public ReactiveObservableCollection<User> Users
+        public ReactiveObservableCollection<Player> Players
         {
-            get { return this._users.Value; }
+            get { return this._players.Value; }
         }
-        public User SelectedUser
+        public Player SelectedPlayer
         {
-            get { return this._selectedUser; }
-            set { this.RaiseAndSetIfChanged(ref this._selectedUser, value); }
+            get { return this._selectedPlayer; }
+            set { this.RaiseAndSetIfChanged(ref this._selectedPlayer, value); }
         }
-
         #endregion
 
-        public ShellViewModel(IUserStorage userStorage)
+        public ShellViewModel(IPlayerStorage playerStorage)
         {
-            Guard.AgainstNullArgument("userStorage", userStorage);
+            Guard.AgainstNullArgument("PlayerStorage", playerStorage);
 
-            this._userStorage = userStorage;
+            this._playerStorage = playerStorage;
 
             this.CreateCommands();
         }
 
         protected override async void OnInitialize()
         {
-            await this.LoadUsers.ExecuteAsyncTask();
+            await this.LoadPlayers.ExecuteAsyncTask();
         }
 
         private  void CreateCommands()
         {
-            this.LoadUsers = ReactiveCommand.CreateAsyncTask(async _ =>
+            this.LoadPlayers = ReactiveCommand.CreateAsyncTask(async _ =>
             {
-                var users = await this._userStorage.GetUsersAsync();
+                await this._playerStorage.AddPlayerAsync(new Player
+                {
+                    Region = Region.EuropeWest,
+                    Username = "haefele"
+                });
 
-                var result = new ReactiveObservableCollection<User>();
-                result.AddRange(users);
+                var players = await this._playerStorage.GetPlayersAsync();
+
+                var result = new ReactiveObservableCollection<Player>();
+                result.AddRange(players);
                 return result;
             });
-            this.LoadUsers.ToProperty(this, f => f.Users, out this._users);
+            this.LoadPlayers.ToProperty(this, f => f.Players, out this._players);
 
-            this.NewUser = ReactiveCommand.Create();
-            this.NewUser.Subscribe(_ =>
+            this.NewPlayer = ReactiveCommand.Create();
+            this.NewPlayer.Subscribe(_ =>
             {
-                var newUser = new User();
-                this.Users.Add(newUser);
+                var newUser = new Player();
+                this.Players.Add(newUser);
 
-                this.SelectedUser = newUser;
+                this.SelectedPlayer = newUser;
             });
 
-            this.DeleteUser = ReactiveCommand.Create(this.WhenAny(f => f.SelectedUser, f => f.Value != null));
-            this.DeleteUser.Subscribe(async _ =>
+            this.DeletePlayer = ReactiveCommand.Create(this.WhenAny(f => f.SelectedPlayer, f => f.Value != null));
+            this.DeletePlayer.Subscribe(async _ =>
             {
-                await this._userStorage.DeleteUserAsync(this.SelectedUser);
-                this.Users.Remove(this.SelectedUser);
+                await this._playerStorage.DeletePlayerAsync(this.SelectedPlayer);
+                this.Players.Remove(this.SelectedPlayer);
             });
         }
     }

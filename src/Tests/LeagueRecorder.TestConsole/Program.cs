@@ -13,10 +13,10 @@ namespace LeagueRecorder.TestConsole
         static void Main(string[] args)
         {
             BlobCache.ApplicationName = "LeagueRecorderOPGG";
-            var service = new UserStorage(BlobCache.UserAccount, new IdentityGenerator());
+            var service = new PlayerStorage(BlobCache.UserAccount, new IdentityGenerator());
             
-            var users = service.GetUsersAsync().Result;
-            service.AddUserAsync(new User {Region = Region.EuropeWest, Username = "haefele"}).Wait();
+            var users = service.GetPlayersAsync().Result;
+            service.AddPlayerAsync(new Player {Region = Region.EuropeWest, Username = "haefele"}).Wait();
             
             //while(true)
             {
@@ -30,12 +30,12 @@ namespace LeagueRecorder.TestConsole
                 spectatorService.SpectateMatchAsync(matchInfo).Wait();
 
                 //Console.Write("Username: ");
-                //var user = new User
+                //var user = new Player
                 //{
                 //    Region = Region.EuropeWest,
                 //    Username = Console.ReadLine()
                 //};
-                //Option<MatchInfo> currentGameResult = recordingService.GetCurrentMatchInfoFromUserAsync(user).Result;
+                //Option<MatchInfo> currentGameResult = recordingService.GetCurrentMatchInfoFromPlayerAsync(user).Result;
 
                 //if (currentGameResult.HasValue)
                 //{

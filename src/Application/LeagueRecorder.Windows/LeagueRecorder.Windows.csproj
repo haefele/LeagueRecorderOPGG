@@ -148,17 +148,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\RegionToStringConverter.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Recording\RecordingService.cs" />
     <Compile Include="Recording\SpectatorService.cs" />
     <Compile Include="Storage\IdentityGenerator.cs" />
     <Compile Include="Storage\MatchStorage.cs" />
-    <Compile Include="Storage\UserStorage.cs" />
+    <Compile Include="Storage\PlayerStorage.cs" />
     <Compile Include="Views\Shell\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Shell\ShellViewModel.cs" />
     <Compile Include="Windsor\AkavacheInstaller.cs" />
+    <Compile Include="Windsor\LoggingInstaller.cs" />
     <Compile Include="Windsor\ServiceInstaller.cs" />
     <Compile Include="Windsor\StartableInstaller.cs" />
     <Compile Include="Windsor\ViewModelInstaller.cs" />

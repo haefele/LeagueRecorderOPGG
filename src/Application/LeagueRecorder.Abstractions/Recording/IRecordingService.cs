@@ -6,7 +6,7 @@ namespace LeagueRecorder.Abstractions.Recording
 {
     public interface IRecordingService : IService
     {
-        Task<MatchInfo> GetCurrentMatchInfoFromUserAsync(User user);
+        Task<MatchInfo> GetCurrentMatchInfoFromPlayerAsync(Player player);
 
         Task<bool> RequestRecordingOfMatchAsync(MatchInfo match);
     }

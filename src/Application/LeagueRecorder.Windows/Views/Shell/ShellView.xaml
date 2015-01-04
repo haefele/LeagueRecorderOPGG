@@ -5,6 +5,7 @@
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" 
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+             xmlns:converter="clr-namespace:LeagueRecorder.Windows.Converters"
              
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -15,33 +16,43 @@
              
              UseLayoutRounding="True"
              >
+    
+    <UserControl.Resources>
+        <converter:RegionToStringConverter x:Key="RegionToStringConverter" />
+    </UserControl.Resources>
 
     <dxlc:LayoutControl Header="Header" Orientation="Vertical">
 
         <dxlc:LayoutGroup View="Tabs" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
             <dxlc:LayoutGroup Header="Players" Orientation="Vertical">
-                
+
+                <dxlc:LayoutGroup>
+                    <dxlc:LayoutItem Width="100">
+                        <Button Content="New Player" Command="{Binding NewPlayer}" />
+                    </dxlc:LayoutItem>
+                    <dxlc:LayoutItem Width="100">
+                        <Button Content="Delete Player" Command="{Binding DeletePlayer}" />
+                    </dxlc:LayoutItem>
+                </dxlc:LayoutGroup>
+
                 <dxlc:LayoutItem VerticalAlignment="Stretch">
-                    <dxg:GridControl ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}">
+                    <dxg:GridControl ItemsSource="{Binding Players}" SelectedItem="{Binding SelectedPlayer}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Name" FieldName="Username" />
-                            <dxg:GridColumn Header="Region" FieldName="Region" />
+                            <dxg:GridColumn Header="Name" FieldName="Playername" />
+                            <dxg:GridColumn Header="Region">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Data.Region, Converter={StaticResource RegionToStringConverter}}" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>    
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.View>
-                            <dxg:TableView AllowGrouping="False" ShowGroupPanel="False" />
+                            <dxg:TableView AllowGrouping="False" ShowGroupPanel="False" AllowEditing="False" />
                         </dxg:GridControl.View>
                     </dxg:GridControl>
                 </dxlc:LayoutItem>
-                
-                <dxlc:LayoutGroup>
-                    <dxlc:LayoutItem Width="100">
-                        <Button Content="New User" Command="{Binding NewUser}" />
-                    </dxlc:LayoutItem>
-                    <dxlc:LayoutItem Width="100">
-                        <Button Content="Delete User" Command="{Binding DeleteUser}" />
-                    </dxlc:LayoutItem>
-                </dxlc:LayoutGroup>
                 
             </dxlc:LayoutGroup>
 

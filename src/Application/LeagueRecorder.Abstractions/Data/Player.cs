@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace LeagueRecorder.Abstractions.Data
 {
-    public class User
+    public class Player
     {
         public string Id { get; set; }
 
@@ -15,7 +15,7 @@ namespace LeagueRecorder.Abstractions.Data
             return string.Format("{0} ({1})", this.Username, this.Region.GetAbbreviation());
         }
 
-        protected bool Equals(User other)
+        protected bool Equals(Player other)
         {
             return string.Equals(Id, other.Id);
         }
@@ -26,7 +26,7 @@ namespace LeagueRecorder.Abstractions.Data
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
 
-            return Equals((User) obj);
+            return Equals((Player) obj);
         }
 
         public override int GetHashCode()

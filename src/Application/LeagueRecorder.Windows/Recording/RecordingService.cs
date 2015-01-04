@@ -33,22 +33,22 @@ namespace LeagueRecorder.Windows.Recording
         #endregion
 
         #region Methods
-        public async Task<MatchInfo> GetCurrentMatchInfoFromUserAsync(User user)
+        public async Task<MatchInfo> GetCurrentMatchInfoFromPlayerAsync(Player player)
         {
-            Guard.AgainstNullArgument("user", user);
-            Guard.AgainstNullArgumentProperty("user", "Username", user.Username);
+            Guard.AgainstNullArgument("Player", player);
+            Guard.AgainstNullArgumentProperty("Player", "Username", player.Username);
             
-            var content = new StringContent(string.Format("userName={0}&force=true", user.Username));
+            var content = new StringContent(string.Format("userName={0}&force=true", player.Username));
             content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
 
-            HttpResponseMessage response = await this.CreateClient(user.Region)
+            HttpResponseMessage response = await this.CreateClient(player.Region)
                                                      .PostAsync("/summoner/ajax/spectator/", content)
                                                      .ConfigureAwait(false);
             string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode == false)
             {
-                this.Logger.ErrorFormat("Error while getting the current match info from the user {0}.{1}{2}", user, Environment.NewLine, responseText);
+                this.Logger.ErrorFormat("Error while getting the current match info from the Player {0}.{1}{2}", player, Environment.NewLine, responseText);
                 return null;
             }
 
@@ -60,7 +60,7 @@ namespace LeagueRecorder.Windows.Recording
             return new MatchInfo
             {
                 GameId = gameId,
-                Region = user.Region
+                Region = player.Region
             };
         }
         public async Task<bool> RequestRecordingOfMatchAsync(MatchInfo match)
