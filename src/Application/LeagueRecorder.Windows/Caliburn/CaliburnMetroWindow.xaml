@@ -1,0 +1,30 @@
+﻿<mahapps:MetroWindow x:Class="LeagueRecorder.Windows.Caliburn.CaliburnMetroWindow"
+        
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:mahapps="http://metro.mahapps.com/winfx/xaml/controls"
+                     xmlns:caliburn="http://www.caliburnproject.org"
+                     
+                     GlowBrush="{DynamicResource AccentColorBrush}"
+                     >
+    
+    <mahapps:MetroWindow.Flyouts>
+        <mahapps:FlyoutsControl ItemsSource="{Binding Flyouts}" >
+            <mahapps:FlyoutsControl.ItemContainerStyle>
+                <Style TargetType="{x:Type mahapps:Flyout}" BasedOn="{StaticResource {x:Type mahapps:Flyout}}">
+                    <Setter Property="Header" Value="{Binding DisplayName}" />
+                    <Setter Property="IsOpen" Value="{Binding IsOpen}" />
+                    <Setter Property="Position" Value="{Binding Position}" />
+                    <Setter Property="IsModal" Value="True" />
+                    <Setter Property="IsPinned" Value="False" />
+                </Style>
+            </mahapps:FlyoutsControl.ItemContainerStyle>
+            <mahapps:FlyoutsControl.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl caliburn:View.Model="{Binding}" />
+                </DataTemplate>
+            </mahapps:FlyoutsControl.ItemTemplate>
+        </mahapps:FlyoutsControl>
+    </mahapps:MetroWindow.Flyouts>
+    
+</mahapps:MetroWindow>

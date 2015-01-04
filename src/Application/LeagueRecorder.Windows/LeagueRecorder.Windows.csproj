@@ -62,19 +62,17 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Data.v14.1, Version=14.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.Images.v14.1, Version=14.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
-      <Private>True</Private>
+    <Reference Include="DevExpress.Mvvm">
+      <HintPath>..\..\packages\DevExpressMvvm.14.2.3.0\lib\net40-client\DevExpress.Mvvm.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Mvvm.v14.1, Version=14.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.Printing.v14.1.Core, Version=14.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Core.v14.1, Version=14.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.Xpf.Grid.v14.1, Version=14.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.Grid.v14.1.Core, Version=14.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Xpf.LayoutControl.v14.1, Version=14.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.Xpf.Printing.v14.1, Version=14.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Mvvm.UI">
+      <HintPath>..\..\packages\DevExpressMvvm.14.2.3.0\lib\net40-client\DevExpress.Mvvm.UI.dll</HintPath>
+    </Reference>
     <Reference Include="LiteGuard">
       <HintPath>..\..\packages\LiteGuard.0.10.0\lib\net35\LiteGuard.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro">
+      <HintPath>..\..\packages\MahApps.Metro.1.0.0.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="NeverNull">
       <HintPath>..\..\packages\NeverNull.2.0.0.14\lib\portable-net40+sl50+win+wpa81+wp80\NeverNull.dll</HintPath>
@@ -123,7 +121,7 @@
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Caliburn.Micro.2.0.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\..\packages\MahApps.Metro.1.0.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -148,6 +146,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Caliburn\CaliburnMetroWindow.xaml.cs">
+      <DependentUpon>CaliburnMetroWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Caliburn\FlyoutReactiveScreen.cs" />
+    <Compile Include="Caliburn\IHaveFlyouts.cs" />
+    <Compile Include="Caliburn\MetroWindowManager.cs" />
     <Compile Include="Converters\RegionToStringConverter.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Recording\RecordingService.cs" />
@@ -155,11 +159,16 @@
     <Compile Include="Storage\IdentityGenerator.cs" />
     <Compile Include="Storage\MatchStorage.cs" />
     <Compile Include="Storage\PlayerStorage.cs" />
+    <Compile Include="Views\Players\PlayersView.xaml.cs">
+      <DependentUpon>PlayersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Players\PlayersViewModel.cs" />
     <Compile Include="Views\Shell\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Shell\ShellViewModel.cs" />
     <Compile Include="Windsor\AkavacheInstaller.cs" />
+    <Compile Include="Windsor\CaliburnInstaller.cs" />
     <Compile Include="Windsor\LoggingInstaller.cs" />
     <Compile Include="Windsor\ServiceInstaller.cs" />
     <Compile Include="Windsor\StartableInstaller.cs" />
@@ -196,6 +205,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Caliburn\CaliburnMetroWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Players\PlayersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Shell\ShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

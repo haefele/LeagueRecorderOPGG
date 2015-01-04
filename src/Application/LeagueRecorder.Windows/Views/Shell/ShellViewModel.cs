@@ -1,88 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using Caliburn.Micro.ReactiveUI;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Abstractions.Storage;
+using LeagueRecorder.Windows.Caliburn;
 using LiteGuard;
+using MahApps.Metro.Controls;
 using ReactiveUI;
 
 namespace LeagueRecorder.Windows.Views.Shell
 {
-    public class ShellViewModel : ReactiveScreen
+    public class ShellViewModel : ReactiveScreen, IHaveFlyouts
     {
-        #region Fields
-        private readonly IPlayerStorage _playerStorage;
+        public ReactiveObservableCollection<FlyoutReactiveScreen> Flyouts { get; set; }
 
-        private ObservableAsPropertyHelper<ReactiveObservableCollection<Player>> _players;
-        private Player _selectedPlayer;
-        #endregion
-
-        #region Properties
-        public ReactiveCommand<ReactiveObservableCollection<Player>> LoadPlayers { get; private set; }
-        public ReactiveCommand<object> NewPlayer { get; private set; }
-        public ReactiveCommand<object> DeletePlayer { get; private set; } 
-
-        public ReactiveObservableCollection<Player> Players
+        public ShellViewModel()
         {
-            get { return this._players.Value; }
-        }
-        public Player SelectedPlayer
-        {
-            get { return this._selectedPlayer; }
-            set { this.RaiseAndSetIfChanged(ref this._selectedPlayer, value); }
-        }
-        #endregion
-
-        public ShellViewModel(IPlayerStorage playerStorage)
-        {
-            Guard.AgainstNullArgument("PlayerStorage", playerStorage);
-
-            this._playerStorage = playerStorage;
-
-            this.CreateCommands();
-        }
-
-        protected override async void OnInitialize()
-        {
-            await this.LoadPlayers.ExecuteAsyncTask();
-        }
-
-        private  void CreateCommands()
-        {
-            this.LoadPlayers = ReactiveCommand.CreateAsyncTask(async _ =>
+            this.Flyouts = new ReactiveObservableCollection<FlyoutReactiveScreen>();
+            this.Flyouts.Add(new FlyoutReactiveScreen
             {
-                await this._playerStorage.AddPlayerAsync(new Player
-                {
-                    Region = Region.EuropeWest,
-                    Username = "haefele"
-                });
-
-                var players = await this._playerStorage.GetPlayersAsync();
-
-                var result = new ReactiveObservableCollection<Player>();
-                result.AddRange(players);
-                return result;
+                DisplayName = "Hallo Welt",
+                Position = Position.Right
             });
-            this.LoadPlayers.ToProperty(this, f => f.Players, out this._players);
+        }
 
-            this.NewPlayer = ReactiveCommand.Create();
-            this.NewPlayer.Subscribe(_ =>
-            {
-                var newUser = new Player();
-                this.Players.Add(newUser);
-
-                this.SelectedPlayer = newUser;
-            });
-
-            this.DeletePlayer = ReactiveCommand.Create(this.WhenAny(f => f.SelectedPlayer, f => f.Value != null));
-            this.DeletePlayer.Subscribe(async _ =>
-            {
-                await this._playerStorage.DeletePlayerAsync(this.SelectedPlayer);
-                this.Players.Remove(this.SelectedPlayer);
-            });
+        public void ShowFlyout()
+        {
+            this.Flyouts.First().Toggle();
         }
     }
 }

@@ -20,8 +20,14 @@
     <UserControl.Resources>
         <converter:RegionToStringConverter x:Key="RegionToStringConverter" />
     </UserControl.Resources>
+    
+    <TabControl>
+        <TabItem Header="Test">
+            <Button x:Name="ShowFlyout">hallo welt</Button>
+        </TabItem>
+    </TabControl>
 
-    <dxlc:LayoutControl Header="Header" Orientation="Vertical">
+    <!--<dxlc:LayoutControl Header="Header" Orientation="Vertical">
 
         <dxlc:LayoutGroup View="Tabs" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
@@ -60,6 +66,6 @@
 
         </dxlc:LayoutGroup>
 
-    </dxlc:LayoutControl>
+    </dxlc:LayoutControl>-->
 
 </UserControl>

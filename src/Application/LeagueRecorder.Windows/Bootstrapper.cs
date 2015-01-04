@@ -8,7 +8,6 @@ using Caliburn.Micro;
 using Castle.Core.Logging;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
-using DevExpress.Xpf.Core;
 using LeagueRecorder.Windows.Views.Shell;
 
 namespace LeagueRecorder.Windows
@@ -37,8 +36,6 @@ namespace LeagueRecorder.Windows
         {
             this._container = new WindsorContainer();
             this._container.Install(FromAssembly.This());
-
-            this.ConfigureDevExpressTheme();
         }
         /// <summary>
         /// Override this to provide an IoC specific implementation.
@@ -108,16 +105,6 @@ namespace LeagueRecorder.Windows
 
             ILogger logger = loggerFactory.Create(this.GetType());
             logger.Error("An unhandled exception occured.", e.Exception);
-        }
-        #endregion
-
-        #region Private Methods
-        /// <summary>
-        /// Configures the DevExpress theme.
-        /// </summary>
-        private void ConfigureDevExpressTheme()
-        {
-            ThemeManager.ApplicationThemeName = "DXStyle";
         }
         #endregion
     }
