@@ -16,10 +16,6 @@ namespace LeagueRecorder.Windows.Windsor
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.AddFacility<StartableFacility>(f => f.DeferredTryStart());
-
-            container.Register(
-                Classes.FromThisAssembly()
-                       .BasedOn<IStartable>());
         }
     }
 }

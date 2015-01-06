@@ -4,7 +4,7 @@ using NeverNull;
 
 namespace LeagueRecorder.Abstractions.Recording
 {
-    public interface ISpectatorService : IService
+    public interface ISpectatorService
     {
         Task<bool> SpectateMatchAsync(MatchInfo match);
     }

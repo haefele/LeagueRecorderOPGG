@@ -3,34 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
-using Akavache;
 using System.Reactive.Linq;
 using Castle.Core;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Abstractions.Storage;
 using LiteGuard;
+using Xemio.CommonLibrary.Storage;
 
 namespace LeagueRecorder.Windows.Storage
 {
-    public class PlayerStorage : IPlayerStorage
+    public class PlayerStorage : IPlayerStorage, IStartable
     {
         #region Fields
-        private readonly IBlobCache _blobCache;
+        private readonly IDataStorage _dataStorage;
         private readonly IIdentityGenerator _identityGenerator;
+
+        private List<Player> _cachedPlayers; 
         #endregion
 
         #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerStorage" /> class.
         /// </summary>
-        /// <param name="blobCache">The BLOB cache.</param>
+        /// <param name="dataStorage">The data storage.</param>
         /// <param name="identityGenerator">The identity generator.</param>
-        public PlayerStorage(IBlobCache blobCache, IIdentityGenerator identityGenerator)
+        public PlayerStorage(IDataStorage dataStorage, IIdentityGenerator identityGenerator)
         {
-            Guard.AgainstNullArgument("blobCache", blobCache);
+            Guard.AgainstNullArgument("dataStorage", dataStorage);
             Guard.AgainstNullArgument("identityGenerator", identityGenerator);
 
-            this._blobCache = blobCache;
+            this._dataStorage = dataStorage;
             this._identityGenerator = identityGenerator;
         }
         #endregion
@@ -41,30 +43,32 @@ namespace LeagueRecorder.Windows.Storage
         /// </summary>
         public Task<IEnumerable<Player>> GetPlayersAsync()
         {
-            return this._blobCache.GetAllObjects<Player>().ToTask();
+            IEnumerable<Player> result = new List<Player>(this._cachedPlayers);
+            return Task.FromResult(result);
         }
         /// <summary>
         /// Asynchronously deletes the specified <paramref name="player"/>.
         /// </summary>
         /// <param name="player">The Player.</param>
-        public async Task<bool> DeletePlayerAsync(Player player)
+        public Task<bool> DeletePlayerAsync(Player player)
         {
             Guard.AgainstNullArgument("player", player);
             Guard.AgainstNullArgumentProperty("player", "Id", player.Id);
 
-            Player loadedPlayer = await this._blobCache.GetObject<Player>(player.Id).ToTask().ConfigureAwait(false);
+            Player foundPlayer = this._cachedPlayers.FirstOrDefault(f => f.Id == player.Id);
 
-            if (loadedPlayer == null)
-                return false;
+            if (foundPlayer == null)
+                return Task.FromResult(false);
 
-            await this._blobCache.InvalidateObject<Player>(player.Id).ToTask().ConfigureAwait(false);
-            return true;
+            this._cachedPlayers.Remove(foundPlayer);
+
+            return Task.FromResult(true);
         }
         /// <summary>
         /// Asynchronously adds the specified <paramref name="player"/>.
         /// </summary>
         /// <param name="player">The player.</param>
-        public async Task AddPlayerAsync(Player player)
+        public Task AddPlayerAsync(Player player)
         {
             Guard.AgainstNullArgument("player", player);
 
@@ -72,7 +76,26 @@ namespace LeagueRecorder.Windows.Storage
                 throw new InvalidOperationException("The Player already has an ID.");
 
             player.Id = this._identityGenerator.Generate();
-            await this._blobCache.InsertObject(player.Id, player).ToTask().ConfigureAwait(false);
+            this._cachedPlayers.Add(player);
+
+            return Task.FromResult(new object());
+        }
+        #endregion
+
+        #region Implementation of IStartable
+        /// <summary>
+        /// Starts this instance.
+        /// </summary>
+        void IStartable.Start()
+        {
+            this._cachedPlayers = this._dataStorage.Retrieve<List<Player>>() ?? new List<Player>();
+        }
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
+        void IStartable.Stop()
+        {
+            this._dataStorage.Store(this._cachedPlayers);
         }
         #endregion
     }

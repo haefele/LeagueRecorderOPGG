@@ -2,6 +2,8 @@
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using LeagueRecorder.Abstractions;
+using LeagueRecorder.Abstractions.Recording;
+using LeagueRecorder.Windows.Recording;
 
 namespace LeagueRecorder.Windows.Windsor
 {
@@ -15,10 +17,8 @@ namespace LeagueRecorder.Windows.Windsor
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
-                Classes.FromThisAssembly()
-                       .BasedOn<IService>()
-                       .WithServiceDefaultInterfaces()
-                       .LifestyleTransient());
+                Component.For<IRecordingService>().ImplementedBy<RecordingService>().LifestyleSingleton(),
+                Component.For<ISpectatorService>().ImplementedBy<SpectatorService>().LifestyleSingleton());
         }
     }
 }

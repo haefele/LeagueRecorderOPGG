@@ -4,7 +4,7 @@ using LeagueRecorder.Abstractions.Data;
 
 namespace LeagueRecorder.Abstractions.Storage
 {
-    public interface IPlayerStorage : IService
+    public interface IPlayerStorage
     {
         /// <summary>
         /// Asynchronously returns all <see cref="Player"/>s.

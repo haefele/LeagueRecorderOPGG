@@ -2,12 +2,13 @@
 using Caliburn.Micro.ReactiveUI;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Abstractions.Storage;
+using LeagueRecorder.Windows.Views.Shell;
 using LiteGuard;
 using ReactiveUI;
 
 namespace LeagueRecorder.Windows.Views.Players
 {
-    public class PlayersViewModel : ReactiveScreen
+    public class PlayersViewModel : ReactiveScreen, IShellTabItem
     {
         #region Fields
         private readonly IPlayerStorage _playerStorage;
@@ -33,6 +34,10 @@ namespace LeagueRecorder.Windows.Views.Players
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayersViewModel"/> class.
+        /// </summary>
+        /// <param name="playerStorage">The player storage.</param>
         public PlayersViewModel(IPlayerStorage playerStorage)
         {
             Guard.AgainstNullArgument("PlayerStorage", playerStorage);
@@ -40,6 +45,8 @@ namespace LeagueRecorder.Windows.Views.Players
             this._playerStorage = playerStorage;
 
             this.CreateCommands();
+
+            this.DisplayName = "Players";
         }
         #endregion
 
@@ -53,12 +60,6 @@ namespace LeagueRecorder.Windows.Views.Players
         {
             this.LoadPlayers = ReactiveCommand.CreateAsyncTask(async _ =>
             {
-                await this._playerStorage.AddPlayerAsync(new Player
-                {
-                    Region = Region.EuropeWest,
-                    Username = "haefele"
-                });
-
                 var players = await this._playerStorage.GetPlayersAsync();
 
                 var result = new ReactiveObservableCollection<Player>();

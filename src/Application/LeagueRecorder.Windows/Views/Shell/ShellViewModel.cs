@@ -8,29 +8,17 @@ using Caliburn.Micro.ReactiveUI;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Abstractions.Storage;
 using LeagueRecorder.Windows.Caliburn;
+using LeagueRecorder.Windows.Views.Players;
 using LiteGuard;
 using MahApps.Metro.Controls;
 using ReactiveUI;
 
 namespace LeagueRecorder.Windows.Views.Shell
 {
-    public class ShellViewModel : ReactiveScreen, IHaveFlyouts
+    public class ShellViewModel : ReactiveConductor<IShellTabItem>.Collection.OneActive
     {
-        public ReactiveObservableCollection<FlyoutReactiveScreen> Flyouts { get; set; }
-
         public ShellViewModel()
         {
-            this.Flyouts = new ReactiveObservableCollection<FlyoutReactiveScreen>();
-            this.Flyouts.Add(new FlyoutReactiveScreen
-            {
-                DisplayName = "Hallo Welt",
-                Position = Position.Right
-            });
-        }
-
-        public void ShowFlyout()
-        {
-            this.Flyouts.First().Toggle();
         }
     }
 }

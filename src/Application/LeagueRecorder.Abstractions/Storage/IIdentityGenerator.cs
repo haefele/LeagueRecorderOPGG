@@ -1,6 +1,6 @@
 ﻿namespace LeagueRecorder.Abstractions.Storage
 {
-    public interface IIdentityGenerator : IService
+    public interface IIdentityGenerator
     {
         /// <summary>
         /// Generates a new identity.

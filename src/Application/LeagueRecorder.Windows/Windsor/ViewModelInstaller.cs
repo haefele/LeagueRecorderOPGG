@@ -2,6 +2,9 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using LeagueRecorder.Windows.Views.CreatePlayer;
+using LeagueRecorder.Windows.Views.Players;
+using LeagueRecorder.Windows.Views.Shell;
 
 namespace LeagueRecorder.Windows.Windsor
 {
@@ -15,10 +18,9 @@ namespace LeagueRecorder.Windows.Windsor
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
-                Classes.FromThisAssembly()
-                       .BasedOn<ReactivePropertyChangedBase>()
-                       .WithServiceSelf()
-                       .LifestyleTransient());
+                Component.For<ShellViewModel>().LifestyleTransient(),
+                Component.For<PlayersViewModel>().Forward<IShellTabItem>().LifestyleTransient(),
+                Component.For<CreatePlayerViewModel>().LifestyleTransient());
         }
     }
 }

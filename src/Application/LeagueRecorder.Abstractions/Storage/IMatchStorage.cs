@@ -5,7 +5,7 @@ using LeagueRecorder.Abstractions.Data;
 
 namespace LeagueRecorder.Abstractions.Storage
 {
-    public interface IMatchStorage : IService
+    public interface IMatchStorage
     {
         /// <summary>
         /// Asynchronously returns all <see cref="MatchInfo"/>s.

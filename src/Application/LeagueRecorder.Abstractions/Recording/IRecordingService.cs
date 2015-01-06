@@ -4,7 +4,7 @@ using NeverNull;
 
 namespace LeagueRecorder.Abstractions.Recording
 {
-    public interface IRecordingService : IService
+    public interface IRecordingService
     {
         Task<MatchInfo> GetCurrentMatchInfoFromPlayerAsync(Player player);
 
