@@ -2,7 +2,7 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using LeagueRecorder.Windows.Views.CreatePlayer;
+using LeagueRecorder.Windows.Views.AddPlayer;
 using LeagueRecorder.Windows.Views.Players;
 using LeagueRecorder.Windows.Views.Shell;
 
@@ -20,7 +20,7 @@ namespace LeagueRecorder.Windows.Windsor
             container.Register(
                 Component.For<ShellViewModel>().LifestyleTransient(),
                 Component.For<PlayersViewModel>().Forward<IShellTabItem>().LifestyleTransient(),
-                Component.For<CreatePlayerViewModel>().LifestyleTransient());
+                Component.For<AddPlayerViewModel>().LifestyleTransient());
         }
     }
 }

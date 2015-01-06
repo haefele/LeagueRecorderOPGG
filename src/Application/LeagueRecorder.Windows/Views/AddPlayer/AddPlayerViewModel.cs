@@ -5,9 +5,9 @@ using Caliburn.Micro.ReactiveUI;
 using LeagueRecorder.Abstractions.Data;
 using ReactiveUI;
 
-namespace LeagueRecorder.Windows.Views.CreatePlayer
+namespace LeagueRecorder.Windows.Views.AddPlayer
 {
-    public class CreatePlayerViewModel : ReactiveScreen
+    public class AddPlayerViewModel : ReactiveScreen
     {
         private string _username;
         private ObservableAsPropertyHelper<ReactiveObservableCollection<Region>> _regions;
@@ -32,7 +32,7 @@ namespace LeagueRecorder.Windows.Views.CreatePlayer
             set { this.RaiseAndSetIfChanged(ref this._selectedRegion, value); }
         }
 
-        public CreatePlayerViewModel()
+        public AddPlayerViewModel()
         {
             this.CreateCommands();
         }

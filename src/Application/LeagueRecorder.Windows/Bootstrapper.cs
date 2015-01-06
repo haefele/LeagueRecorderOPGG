@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -83,7 +84,12 @@ namespace LeagueRecorder.Windows
         /// <param name="e">The args.</param>
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            this.DisplayRootViewFor<ShellViewModel>();
+            dynamic settings = new ExpandoObject();
+            settings.Width = 300;
+            settings.Height = 400;
+            settings.SizeToContent = SizeToContent.Manual;
+
+            this.DisplayRootViewFor<ShellViewModel>(settings);
         }
         /// <summary>
         /// Override this to add custom behavior on exit.

@@ -19,6 +19,7 @@ namespace LeagueRecorder.Windows.Views.Shell
     {
         public ShellViewModel()
         {
+            this.DisplayName = "League Recorder";
         }
     }
 }

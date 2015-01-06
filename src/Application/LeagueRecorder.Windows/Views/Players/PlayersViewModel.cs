@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
+using Caliburn.Micro;
 using Caliburn.Micro.ReactiveUI;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Abstractions.Storage;
+using LeagueRecorder.Windows.Views.AddPlayer;
 using LeagueRecorder.Windows.Views.Shell;
 using LiteGuard;
 using ReactiveUI;
@@ -12,6 +15,7 @@ namespace LeagueRecorder.Windows.Views.Players
     {
         #region Fields
         private readonly IPlayerStorage _playerStorage;
+        private readonly IWindowManager _windowManager;
 
         private ObservableAsPropertyHelper<ReactiveObservableCollection<Player>> _players;
         private Player _selectedPlayer;
@@ -34,15 +38,19 @@ namespace LeagueRecorder.Windows.Views.Players
         #endregion
 
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayersViewModel"/> class.
         /// </summary>
         /// <param name="playerStorage">The player storage.</param>
-        public PlayersViewModel(IPlayerStorage playerStorage)
+        /// <param name="windowManager">The window manager.</param>
+        public PlayersViewModel(IPlayerStorage playerStorage, IWindowManager windowManager)
         {
-            Guard.AgainstNullArgument("PlayerStorage", playerStorage);
+            Guard.AgainstNullArgument("playerStorage", playerStorage);
+            Guard.AgainstNullArgument("windowManager", windowManager);
 
             this._playerStorage = playerStorage;
+            this._windowManager = windowManager;
 
             this.CreateCommands();
 
@@ -67,21 +75,35 @@ namespace LeagueRecorder.Windows.Views.Players
                 return result;
             });
             this.LoadPlayers.ToProperty(this, f => f.Players, out this._players);
+            this.LoadPlayers.Subscribe(_ =>
+            {
+                if (this.Players != null)
+                    this.SelectedPlayer = this.Players.FirstOrDefault();
+            });
 
             this.NewPlayer = ReactiveCommand.Create();
-            this.NewPlayer.Subscribe(_ =>
+            this.NewPlayer.Subscribe(async _ =>
             {
-                var newUser = new Player();
-                this.Players.Add(newUser);
+                var createPlayerViewModel = new AddPlayerViewModel();
 
-                this.SelectedPlayer = newUser;
+                if (this._windowManager.ShowDialog(createPlayerViewModel) == true)
+                {
+                    var player = new Player
+                    {
+                        Region = createPlayerViewModel.SelectedRegion,
+                        Username = createPlayerViewModel.Username
+                    };
+
+                    await this._playerStorage.AddPlayerAsync(player);
+                    await this.LoadPlayers.ExecuteAsyncTask();
+                }
             });
 
             this.DeletePlayer = ReactiveCommand.Create(this.WhenAny(f => f.SelectedPlayer, f => f.Value != null));
             this.DeletePlayer.Subscribe(async _ =>
             {
                 await this._playerStorage.DeletePlayerAsync(this.SelectedPlayer);
-                this.Players.Remove(this.SelectedPlayer);
+                await this.LoadPlayers.ExecuteAsyncTask();
             });
         }
         #endregion
