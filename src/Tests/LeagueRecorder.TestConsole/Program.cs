@@ -1,5 +1,4 @@
 ﻿using System;
-using Akavache;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Windows.Properties;
 using LeagueRecorder.Windows.Recording;
@@ -12,22 +11,21 @@ namespace LeagueRecorder.TestConsole
     {
         static void Main(string[] args)
         {
-            BlobCache.ApplicationName = "LeagueRecorderOPGG";
-            var service = new PlayerStorage(BlobCache.UserAccount, new IdentityGenerator());
+            //var service = new PlayerStorage(BlobCache.UserAccount, new IdentityGenerator());
             
-            var users = service.GetPlayersAsync().Result;
-            service.AddPlayerAsync(new Player {Region = Region.EuropeWest, Username = "haefele"}).Wait();
+            //var users = service.GetPlayersAsync().Result;
+            //service.AddPlayerAsync(new Player {Region = Region.EuropeWest, Username = "haefele"}).Wait();
             
             //while(true)
             {
-                var spectatorService = new SpectatorService();
+                //var spectatorService = new SpectatorService();
 
-                var matchInfo = new MatchInfo
-                {
-                    GameId = "1899597404",
-                    Region = Region.EuropeWest
-                };
-                spectatorService.SpectateMatchAsync(matchInfo).Wait();
+                //var matchInfo = new MatchInfo
+                //{
+                //    GameId = "1899597404",
+                //    Region = Region.EuropeWest
+                //};
+                //spectatorService.SpectateMatchAsync(matchInfo).Wait();
 
                 //Console.Write("Username: ");
                 //var user = new Player
