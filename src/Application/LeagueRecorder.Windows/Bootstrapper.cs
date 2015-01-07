@@ -85,9 +85,8 @@ namespace LeagueRecorder.Windows
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
             dynamic settings = new ExpandoObject();
-            settings.Width = 300;
-            settings.Height = 400;
-            settings.SizeToContent = SizeToContent.Manual;
+            settings.SizeToContent = SizeToContent.WidthAndHeight;
+            settings.ResizeMode = ResizeMode.NoResize;
 
             this.DisplayRootViewFor<ShellViewModel>(settings);
         }
