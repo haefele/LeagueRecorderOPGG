@@ -46,9 +46,10 @@
     <Compile Include="Data\MatchInfo.cs" />
     <Compile Include="Data\Region.cs" />
     <Compile Include="Data\Player.cs" />
+    <Compile Include="League\IPlayerService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Recording\ISpectatorService.cs" />
-    <Compile Include="Recording\IRecordingService.cs" />
+    <Compile Include="League\ISpectatorService.cs" />
+    <Compile Include="League\IRecordingService.cs" />
     <Compile Include="Storage\IIdentityGenerator.cs" />
     <Compile Include="Storage\IMatchStorage.cs" />
     <Compile Include="Storage\IPlayerStorage.cs" />

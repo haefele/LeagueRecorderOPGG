@@ -3,37 +3,66 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Castle.Core.Logging;
 using LeagueRecorder.Abstractions.Data;
-using LeagueRecorder.Abstractions.Recording;
+using LeagueRecorder.Abstractions.League;
 using LeagueRecorder.Windows.Extensions;
 using LiteGuard;
-using NeverNull;
 
-namespace LeagueRecorder.Windows.Recording
+namespace LeagueRecorder.Windows.League
 {
     public class SpectatorService : ISpectatorService
     {
+        #region Properties
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        public ILogger Logger { get; set; }
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpectatorService"/> class.
+        /// </summary>
+        public SpectatorService()
+        {
+            this.Logger = NullLogger.Instance;
+        }
+        #endregion
+
+        #region Methods
         public async Task<bool> SpectateMatchAsync(MatchInfo match)
         {
             Guard.AgainstNullArgument("match", match);
+
+            this.Logger.DebugFormat("Trying to spectate the match '{0}'.", match);
 
             HttpResponseMessage response = await this.CreateClient(match.Region)
                                                      .GetAsync(string.Format("/match/observer/id={0}", match.GameId))
                                                      .ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode == false)
+            {
+                this.Logger.DebugFormat("No successfull response from the web-service. Can't spectate the game.");
                 return false;
+            }
 
             string commands = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            this.Logger.DebugFormat("Got the commands to spectate the match.");
 
             string filePath = await CreateBatchFile(commands).ConfigureAwait(false);
 
+            this.Logger.DebugFormat("Starting the bat-file.");
             await Process.Start(filePath).WaitForExitAsync().ConfigureAwait(false);
+
+            this.Logger.DebugFormat("Deleting the temporary file.");
             File.Delete(filePath);
 
             return true;
         }
+        #endregion
 
+        #region Private Methods
         private HttpClient CreateClient(Region region)
         {
             return new HttpClient
@@ -41,10 +70,12 @@ namespace LeagueRecorder.Windows.Recording
                 BaseAddress = new Uri(region.GetBaseUri())
             };
         }
-        private static async Task<string> CreateBatchFile(string commands)
+        private async Task<string> CreateBatchFile(string commands)
         {
             string fileName = string.Format("{0}.bat", Guid.NewGuid().ToString("N"));
             string filePath = Path.Combine(Path.GetTempPath(), fileName);
+
+            this.Logger.DebugFormat("Creating a temporary bat-file at '{0}'.", filePath);
 
             using (var fileStream = File.Open(filePath, FileMode.Create))
             using (var writer = new StreamWriter(fileStream))
@@ -54,5 +85,6 @@ namespace LeagueRecorder.Windows.Recording
 
             return filePath;
         }
+        #endregion
     }
 }

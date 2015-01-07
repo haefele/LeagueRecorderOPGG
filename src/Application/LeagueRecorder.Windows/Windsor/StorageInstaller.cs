@@ -13,6 +13,11 @@ namespace LeagueRecorder.Windows.Windsor
 {
     public class StorageInstaller : IWindsorInstaller
     {
+        /// <summary>
+        /// Performs the installation in the <see cref="T:Castle.Windsor.IWindsorContainer" />.
+        /// </summary>
+        /// <param name="container">The container.</param>
+        /// <param name="store">The configuration store.</param>
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
@@ -22,6 +27,10 @@ namespace LeagueRecorder.Windows.Windsor
                 Component.For<IPlayerStorage>().Forward<IStartable>().ImplementedBy<PlayerStorage>().LifestyleSingleton());
         }
 
+        #region Private Methods
+        /// <summary>
+        /// Creates the data storage.
+        /// </summary>
         private IDataStorage CreateDataStorage()
         {
             string dataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LeagueRecorder");
@@ -31,5 +40,6 @@ namespace LeagueRecorder.Windows.Windsor
                 FileSystem = new FileSystem(dataPath)
             });
         }
+        #endregion
     }
 }

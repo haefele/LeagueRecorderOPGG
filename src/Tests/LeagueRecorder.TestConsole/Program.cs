@@ -1,7 +1,6 @@
 ﻿using System;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Windows.Properties;
-using LeagueRecorder.Windows.Recording;
 using LeagueRecorder.Windows.Storage;
 using NeverNull;
 

@@ -1,4 +1,6 @@
-﻿using Caliburn.Micro.ReactiveUI;
+﻿using System;
+using Caliburn.Micro.ReactiveUI;
+using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -20,7 +22,9 @@ namespace LeagueRecorder.Windows.Windsor
             container.Register(
                 Component.For<ShellViewModel>().LifestyleTransient(),
                 Component.For<PlayersViewModel>().Forward<IShellTabItem>().LifestyleTransient(),
-                Component.For<AddPlayerViewModel>().LifestyleTransient());
+                Component.For<AddPlayerViewModel>().LifestyleTransient(),
+
+                Component.For<Func<AddPlayerViewModel>>().AsFactory());
         }
     }
 }

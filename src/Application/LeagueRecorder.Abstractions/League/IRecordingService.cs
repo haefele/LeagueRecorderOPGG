@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 using LeagueRecorder.Abstractions.Data;
-using NeverNull;
 
-namespace LeagueRecorder.Abstractions.Recording
+namespace LeagueRecorder.Abstractions.League
 {
     public interface IRecordingService
     {

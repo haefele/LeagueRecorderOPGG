@@ -152,8 +152,9 @@
     <Compile Include="Caliburn\MetroWindowManager.cs" />
     <Compile Include="Converters\RegionToStringConverter.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
-    <Compile Include="Recording\RecordingService.cs" />
-    <Compile Include="Recording\SpectatorService.cs" />
+    <Compile Include="League\PlayerService.cs" />
+    <Compile Include="League\RecordingService.cs" />
+    <Compile Include="League\SpectatorService.cs" />
     <Compile Include="Storage\IdentityGenerator.cs" />
     <Compile Include="Storage\MatchStorage.cs" />
     <Compile Include="Storage\PlayerStorage.cs" />
@@ -171,6 +172,7 @@
     </Compile>
     <Compile Include="Views\Shell\ShellViewModel.cs" />
     <Compile Include="Windsor\CaliburnInstaller.cs" />
+    <Compile Include="Windsor\FactoryInstaller.cs" />
     <Compile Include="Windsor\LoggingInstaller.cs" />
     <Compile Include="Windsor\ServiceInstaller.cs" />
     <Compile Include="Windsor\StartableInstaller.cs" />

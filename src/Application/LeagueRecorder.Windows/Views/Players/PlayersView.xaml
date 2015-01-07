@@ -14,6 +14,7 @@
     <UserControl.Resources>
         <converters:RegionToStringConverter x:Key="RegionToStringConverter" />
     </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

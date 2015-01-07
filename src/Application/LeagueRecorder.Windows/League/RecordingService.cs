@@ -5,12 +5,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Castle.Core.Logging;
 using LeagueRecorder.Abstractions.Data;
-using LeagueRecorder.Abstractions.Recording;
+using LeagueRecorder.Abstractions.League;
 using LiteGuard;
-using NeverNull;
 using Newtonsoft.Json.Linq;
 
-namespace LeagueRecorder.Windows.Recording
+namespace LeagueRecorder.Windows.League
 {
     public class RecordingService : IRecordingService
     {
@@ -20,8 +19,7 @@ namespace LeagueRecorder.Windows.Recording
         /// </summary>
         public ILogger Logger { get; set; }
         #endregion
-
-
+        
         #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="RecordingService"/> class.
@@ -38,6 +36,8 @@ namespace LeagueRecorder.Windows.Recording
             Guard.AgainstNullArgument("Player", player);
             Guard.AgainstNullArgumentProperty("Player", "Username", player.Username);
             
+            this.Logger.DebugFormat("Getting the current match from the player '{0}'.", player);
+
             var content = new StringContent(string.Format("userName={0}&force=true", player.Username));
             content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
 
@@ -46,9 +46,11 @@ namespace LeagueRecorder.Windows.Recording
                                                      .ConfigureAwait(false);
             string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
+            this.Logger.DebugFormat("Got response from the web-service: {0}", responseText);
+
             if (response.IsSuccessStatusCode == false)
             {
-                this.Logger.ErrorFormat("Error while getting the current match info from the Player {0}.{1}{2}", player, Environment.NewLine, responseText);
+                this.Logger.ErrorFormat("Error while getting the current match info from the Player {0}. {1}", player, responseText);
                 return null;
             }
 
@@ -67,14 +69,18 @@ namespace LeagueRecorder.Windows.Recording
         {
             Guard.AgainstNullArgument("match", match);
 
+            this.Logger.DebugFormat("Requesting that match '{0}' is beeing recorded.", match);
+
             HttpResponseMessage response = await this.CreateClient(match.Region)
                                                      .GetAsync(string.Format("/summoner/ajax/requestRecording.json/gameId={0}", match.GameId))
                                                      .ConfigureAwait(false);
             string responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
+            this.Logger.DebugFormat("Got response from the web-service: {0}", responseText);
+
             if (response.IsSuccessStatusCode == false)
             { 
-                this.Logger.ErrorFormat("Error while requesting to record the match {0}.{1}{2}", match, Environment.NewLine, responseText);
+                this.Logger.ErrorFormat("Error while requesting to record the match {0}. {1}", match, responseText);
                 return false;
             }
 
@@ -106,11 +112,13 @@ namespace LeagueRecorder.Windows.Recording
         {
             Guard.AgainstNullArgument("response", response);
 
+            this.Logger.DebugFormat("Trying to extract the current game-id from the response: {0}", response);
+
             Match match = Regex.Match(response, @"/match/observer/id=(\d*)");
 
             if (match.Success == false)
             {
-                this.Logger.ErrorFormat("Could not extract the game-id from the response.{0}{1}", Environment.NewLine, response);
+                this.Logger.ErrorFormat("Could not extract the game-id from the response: {0}", response);
                 return null;
             }
 
