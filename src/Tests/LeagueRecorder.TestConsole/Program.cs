@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
+using Castle.Windsor;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Windows.Properties;
 using LeagueRecorder.Windows.Storage;
@@ -6,10 +10,36 @@ using NeverNull;
 
 namespace LeagueRecorder.TestConsole
 {
+    public class RootItemB : IRootItem
+    {
+        
+    }
+    public class RootItemA : IRootItem
+    {
+        
+    }
+    public interface IRootItem
+    {
+        
+    }
+    public class Root
+    {
+        public List<IRootItem> Items { get; set; } 
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
+            var container = new WindsorContainer();
+            container.Register(
+                Component.For<RootItemA>().Forward<IRootItem>().LifestyleTransient(),
+                Component.For<RootItemB>().Forward<IRootItem>().LifestyleTransient(),
+                Component.For<Root>().LifestyleTransient());
+            container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
+
+            var root = container.Resolve<Root>();
+
             //var service = new PlayerStorage(BlobCache.UserAccount, new IdentityGenerator());
             
             //var users = service.GetPlayersAsync().Result;

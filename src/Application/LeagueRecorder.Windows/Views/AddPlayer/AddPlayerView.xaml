@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converter="clr-namespace:LeagueRecorder.Windows.Converters"
              xmlns:mahApps="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
@@ -24,7 +25,11 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         
-        <TextBox x:Name="Username" Grid.Row="0" mahApps:TextBoxHelper.Watermark="Username" />
+        <TextBox x:Name="Username" Grid.Row="0" mahApps:TextBoxHelper.Watermark="Username">
+            <dxmvvm:Interaction.Behaviors>
+                <dxmvvm:FocusBehavior />
+            </dxmvvm:Interaction.Behaviors>
+        </TextBox>
         
         <ComboBox x:Name="Regions" Grid.Row="2">
             <ComboBox.ItemTemplate>
@@ -33,14 +38,13 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>    
         </ComboBox>
-        
-        <Grid Grid.Row="3" Background="{DynamicResource AccentColorBrush}" Height="1" VerticalAlignment="Center" />
 
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Width="50"
                     Height="50"
                     Style="{DynamicResource MetroCircleButtonStyle}"
                     Command="{Binding Create}"
+                    IsDefault="True"
                     ToolTip="Create">
                 <Rectangle Width="20"
                            Height="20"

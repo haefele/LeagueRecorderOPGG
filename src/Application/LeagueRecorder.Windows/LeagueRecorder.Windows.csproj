@@ -162,6 +162,10 @@
       <DependentUpon>AddPlayerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AddPlayer\AddPlayerViewModel.cs" />
+    <Compile Include="Views\Matches\MatchesView.xaml.cs">
+      <DependentUpon>MatchesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Matches\MatchesViewModel.cs" />
     <Compile Include="Views\Players\PlayersView.xaml.cs">
       <DependentUpon>PlayersView.xaml</DependentUpon>
     </Compile>
@@ -172,6 +176,7 @@
     </Compile>
     <Compile Include="Views\Shell\ShellViewModel.cs" />
     <Compile Include="Windsor\CaliburnInstaller.cs" />
+    <Compile Include="Windsor\CollectionInstaller.cs" />
     <Compile Include="Windsor\FactoryInstaller.cs" />
     <Compile Include="Windsor\LoggingInstaller.cs" />
     <Compile Include="Windsor\ServiceInstaller.cs" />
@@ -218,6 +223,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\AddPlayer\AddPlayerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Matches\MatchesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

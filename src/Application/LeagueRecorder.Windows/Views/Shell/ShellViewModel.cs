@@ -17,9 +17,13 @@ namespace LeagueRecorder.Windows.Views.Shell
 {
     public class ShellViewModel : ReactiveConductor<IShellTabItem>.Collection.OneActive
     {
-        public ShellViewModel()
+        public ShellViewModel(IShellTabItem[] tabItems)
         {
+            Guard.AgainstNullArgument("tabItems", tabItems);
+
             this.DisplayName = "League Recorder";
+
+            this.Items.AddRange(tabItems);
         }
     }
 }
