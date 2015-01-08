@@ -16,6 +16,10 @@
         <converter:RegionToStringConverter x:Key="RegionToStringConverter" />
     </UserControl.Resources>
     
+    <UserControl.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding Create}" />
+    </UserControl.InputBindings>
+    
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -44,7 +48,6 @@
                     Height="50"
                     Style="{DynamicResource MetroCircleButtonStyle}"
                     Command="{Binding Create}"
-                    IsDefault="True"
                     ToolTip="Create">
                 <Rectangle Width="20"
                            Height="20"
