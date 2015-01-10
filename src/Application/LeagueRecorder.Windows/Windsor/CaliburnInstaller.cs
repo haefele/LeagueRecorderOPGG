@@ -16,7 +16,8 @@ namespace LeagueRecorder.Windows.Windsor
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(
-                Component.For<IWindowManager>().ImplementedBy<MetroWindowManager>().LifestyleSingleton());
+                Component.For<IWindowManager>().ImplementedBy<MetroWindowManager>().LifestyleSingleton(),
+                Component.For<IEventAggregator>().ImplementedBy<EventAggregator>().LifestyleSingleton());
         }
     }
 }

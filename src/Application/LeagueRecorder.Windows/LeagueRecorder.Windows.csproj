@@ -151,7 +151,12 @@
     <Compile Include="Caliburn\IHaveFlyouts.cs" />
     <Compile Include="Caliburn\MetroWindowManager.cs" />
     <Compile Include="Converters\RegionToStringConverter.cs" />
+    <Compile Include="Events\MatchAddedEvent.cs" />
+    <Compile Include="Events\PlayerAddedEvent.cs" />
+    <Compile Include="Events\PlayerEvent.cs" />
+    <Compile Include="Events\PlayerRemovedEvent.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
+    <Compile Include="League\AutoRecorder.cs" />
     <Compile Include="League\PlayerService.cs" />
     <Compile Include="League\RecordingService.cs" />
     <Compile Include="League\SpectatorService.cs" />

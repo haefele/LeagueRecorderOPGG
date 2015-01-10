@@ -4,9 +4,11 @@ using System.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Reactive.Linq;
+using Caliburn.Micro;
 using Castle.Core;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Abstractions.Storage;
+using LeagueRecorder.Windows.Events;
 using LiteGuard;
 using Xemio.CommonLibrary.Storage;
 
@@ -17,6 +19,7 @@ namespace LeagueRecorder.Windows.Storage
         #region Fields
         private readonly IDataStorage _dataStorage;
         private readonly IIdentityGenerator _identityGenerator;
+        private readonly IEventAggregator _eventAggregator;
 
         private List<Player> _cachedPlayers; 
         #endregion
@@ -27,13 +30,16 @@ namespace LeagueRecorder.Windows.Storage
         /// </summary>
         /// <param name="dataStorage">The data storage.</param>
         /// <param name="identityGenerator">The identity generator.</param>
-        public PlayerStorage(IDataStorage dataStorage, IIdentityGenerator identityGenerator)
+        /// <param name="eventAggregator">The event aggregator.</param>
+        public PlayerStorage(IDataStorage dataStorage, IIdentityGenerator identityGenerator, IEventAggregator eventAggregator)
         {
             Guard.AgainstNullArgument("dataStorage", dataStorage);
             Guard.AgainstNullArgument("identityGenerator", identityGenerator);
+            Guard.AgainstNullArgument("eventAggregator", eventAggregator);
 
             this._dataStorage = dataStorage;
             this._identityGenerator = identityGenerator;
+            this._eventAggregator = eventAggregator;
         }
         #endregion
 
@@ -62,6 +68,8 @@ namespace LeagueRecorder.Windows.Storage
 
             this._cachedPlayers.Remove(foundPlayer);
 
+            this._eventAggregator.PublishOnUIThread(new PlayerRemovedEvent(foundPlayer));
+
             return Task.FromResult(true);
         }
         /// <summary>
@@ -77,6 +85,8 @@ namespace LeagueRecorder.Windows.Storage
 
             player.Id = this._identityGenerator.Generate();
             this._cachedPlayers.Add(player);
+
+            this._eventAggregator.PublishOnUIThread(new PlayerAddedEvent(player));
 
             return Task.FromResult(new object());
         }

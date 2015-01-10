@@ -19,7 +19,8 @@ namespace LeagueRecorder.Windows.Windsor
             container.Register(
                 Component.For<IRecordingService>().ImplementedBy<RecordingService>().LifestyleSingleton(),
                 Component.For<ISpectatorService>().ImplementedBy<SpectatorService>().LifestyleSingleton(),
-                Component.For<IPlayerService>().ImplementedBy<PlayerService>().LifestyleSingleton());
+                Component.For<IPlayerService>().ImplementedBy<PlayerService>().LifestyleSingleton(),
+                Component.For<IAutoRecorder>().ImplementedBy<AutoRecorder>().LifestyleSingleton());
         }
     }
 }
