@@ -31,6 +31,10 @@ namespace LeagueRecorder.Windows.League
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Downloads the spectate-file and starts the League of Legends client to spectate the specified <paramref name="match" />.
+        /// </summary>
+        /// <param name="match">The match.</param>
         public async Task<bool> SpectateMatchAsync(MatchInfo match)
         {
             Guard.AgainstNullArgument("match", match);
@@ -63,6 +67,10 @@ namespace LeagueRecorder.Windows.League
         #endregion
 
         #region Private Methods
+        /// <summary>
+        /// Creates the client.
+        /// </summary>
+        /// <param name="region">The region.</param>
         private HttpClient CreateClient(Region region)
         {
             return new HttpClient
@@ -70,6 +78,10 @@ namespace LeagueRecorder.Windows.League
                 BaseAddress = new Uri(region.GetBaseUri())
             };
         }
+        /// <summary>
+        /// Creates the batch file containing the specified <paramref name="commands"/>.
+        /// </summary>
+        /// <param name="commands">The commands.</param>
         private async Task<string> CreateBatchFile(string commands)
         {
             string fileName = string.Format("{0}.bat", Guid.NewGuid().ToString("N"));

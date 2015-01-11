@@ -1,33 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
+using System.Text.RegularExpressions;
 using System.Timers;
+using Castle.Core.Logging;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Abstractions.League;
 using LeagueRecorder.Abstractions.Storage;
+using LiteGuard;
 using Xemio.CommonLibrary.Common;
 
 namespace LeagueRecorder.Windows.League
 {
     public class AutoRecorder : IAutoRecorder
     {
+        #region Fields
         private readonly IRecordingService _recordingService;
         private readonly IMatchStorage _matchStorage;
 
         private Timer _recordingTimer;
         private Player[] _players;
+        #endregion
 
+        #region Properties
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        public ILogger Logger { get; set; }
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoRecorder"/> class.
+        /// </summary>
+        /// <param name="recordingService">The recording service.</param>
+        /// <param name="matchStorage">The match storage.</param>
         public AutoRecorder(IRecordingService recordingService, IMatchStorage matchStorage)
         {
-            _recordingService = recordingService;
-            _matchStorage = matchStorage;
-        }
+            Guard.AgainstNullArgument("recordingService", recordingService);
+            Guard.AgainstNullArgument("matchStorage", matchStorage);
 
+            this.Logger = NullLogger.Instance;
+
+            this._recordingService = recordingService;
+            this._matchStorage = matchStorage;
+        }
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Starts to record all matches of the specified <paramref name="players" />.
+        /// </summary>
+        /// <param name="players">The players.</param>
         public IDisposable StartRecordingPlayerMatches(Player[] players)
         {
             if (this._recordingTimer != null)
                 throw new InvalidOperationException("Recording was already started. You need to dispose the result of this method before you can start a new recording.");
-
+            
             this._players = players;
 
             this._recordingTimer = new Timer();
@@ -43,7 +73,14 @@ namespace LeagueRecorder.Windows.League
                 this._recordingTimer = null;
             });
         }
+        #endregion
 
+        #region Private Methods
+        /// <summary>
+        /// Checks for matches to record.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="ElapsedEventArgs"/> instance containing the event data.</param>
         private async void CheckForMatchesToRecord(object sender, ElapsedEventArgs e)
         {
             foreach (Player player in this._players)
@@ -55,10 +92,16 @@ namespace LeagueRecorder.Windows.League
                     bool recordingStarted = await this._recordingService.RequestRecordingOfMatchAsync(currentMatch);
                     if (recordingStarted)
                     {
-                        await this._matchStorage.AddMatchAsync(currentMatch);
+                        IEnumerable<MatchInfo> existingMatches = await this._matchStorage.GetMatchesAsync();
+
+                        if (existingMatches.Any(f => f.GameId == currentMatch.GameId) == false)
+                        { 
+                            await this._matchStorage.AddMatchAsync(currentMatch);
+                        }
                     }
                 }
             }
         }
+        #endregion
     }
 }

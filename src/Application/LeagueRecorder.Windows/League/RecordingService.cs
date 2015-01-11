@@ -31,6 +31,10 @@ namespace LeagueRecorder.Windows.League
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Asynchronously returns the current <see cref="MatchInfo" /> of the specified <paramref name="player" />.
+        /// </summary>
+        /// <param name="player">The player.</param>
         public async Task<MatchInfo> GetCurrentMatchInfoFromPlayerAsync(Player player)
         {
             Guard.AgainstNullArgument("Player", player);
@@ -65,6 +69,11 @@ namespace LeagueRecorder.Windows.League
                 Region = player.Region
             };
         }
+        /// <summary>
+        /// Asynchronously requests to record the specified <paramref name="match" />.
+        /// Returns whether the match is beeing recorded.
+        /// </summary>
+        /// <param name="match">The match.</param>
         public async Task<bool> RequestRecordingOfMatchAsync(MatchInfo match)
         {
             Guard.AgainstNullArgument("match", match);

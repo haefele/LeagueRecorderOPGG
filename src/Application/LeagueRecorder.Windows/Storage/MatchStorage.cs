@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using Caliburn.Micro;
 using Castle.Core;
+using Castle.Core.Logging;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Abstractions.Storage;
 using LeagueRecorder.Windows.Events;
@@ -24,6 +25,13 @@ namespace LeagueRecorder.Windows.Storage
         private List<MatchInfo> _cachedMatches; 
         #endregion
 
+        #region Properties
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        public ILogger Logger { get; set; }
+        #endregion
+
         #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchStorage"/> class.
@@ -37,6 +45,8 @@ namespace LeagueRecorder.Windows.Storage
             Guard.AgainstNullArgument("identityGenerator", identityGenerator);
             Guard.AgainstNullArgument("eventAggregator", eventAggregator);
 
+            this.Logger = NullLogger.Instance;
+
             this._dataStorage = dataStorage;
             this._identityGenerator = identityGenerator;
             this._eventAggregator = eventAggregator;
@@ -49,6 +59,8 @@ namespace LeagueRecorder.Windows.Storage
         /// </summary>
         public Task<IEnumerable<MatchInfo>> GetMatchesAsync()
         {
+            this.Logger.DebugFormat("Requesting all matches.");
+
             IEnumerable<MatchInfo> result = new List<MatchInfo>(this._cachedMatches);
             return Task.FromResult(result);
         }
@@ -60,13 +72,19 @@ namespace LeagueRecorder.Windows.Storage
         {
             Guard.AgainstNullArgument("match", match);
 
+            this.Logger.DebugFormat("Adding a new match: {0}", match);
+
             if (match.Id != null)
+            {
+                this.Logger.DebugFormat("Tried to store a match that is already stored. Id: {0}", match.Id);
                 throw new InvalidOperationException("The match already has an ID.");
+            }
 
             match.Id = this._identityGenerator.Generate();
             this._cachedMatches.Add(match);
 
             this._eventAggregator.PublishOnUIThread(new MatchAddedEvent(match));
+            this.Logger.DebugFormat("Stored a new match with id: {0}", match.Id);
 
             return Task.FromResult(new object());
         }
@@ -78,6 +96,7 @@ namespace LeagueRecorder.Windows.Storage
         /// </summary>
         void IStartable.Start()
         {
+            this.Logger.DebugFormat("Loading all matches from the data-storage.");
             this._cachedMatches = this._dataStorage.Retrieve<List<MatchInfo>>() ?? new List<MatchInfo>();
         }
         /// <summary>
@@ -85,6 +104,7 @@ namespace LeagueRecorder.Windows.Storage
         /// </summary>
         void IStartable.Stop()
         {
+            this.Logger.DebugFormat("Saving all matches in the data-storage.");
             this._dataStorage.Store(this._cachedMatches);
         }
         #endregion

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Reactive.Linq;
 using Caliburn.Micro;
 using Castle.Core;
+using Castle.Core.Logging;
 using LeagueRecorder.Abstractions.Data;
 using LeagueRecorder.Abstractions.Storage;
 using LeagueRecorder.Windows.Events;
@@ -24,6 +25,13 @@ namespace LeagueRecorder.Windows.Storage
         private List<Player> _cachedPlayers; 
         #endregion
 
+        #region Properties
+        /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        public ILogger Logger { get; set; }
+        #endregion
+
         #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerStorage" /> class.
@@ -37,6 +45,8 @@ namespace LeagueRecorder.Windows.Storage
             Guard.AgainstNullArgument("identityGenerator", identityGenerator);
             Guard.AgainstNullArgument("eventAggregator", eventAggregator);
 
+            this.Logger = NullLogger.Instance;
+
             this._dataStorage = dataStorage;
             this._identityGenerator = identityGenerator;
             this._eventAggregator = eventAggregator;
@@ -49,6 +59,8 @@ namespace LeagueRecorder.Windows.Storage
         /// </summary>
         public Task<IEnumerable<Player>> GetPlayersAsync()
         {
+            this.Logger.DebugFormat("Requesting all players.");
+
             IEnumerable<Player> result = new List<Player>(this._cachedPlayers);
             return Task.FromResult(result);
         }
@@ -61,14 +73,20 @@ namespace LeagueRecorder.Windows.Storage
             Guard.AgainstNullArgument("player", player);
             Guard.AgainstNullArgumentProperty("player", "Id", player.Id);
 
+            this.Logger.DebugFormat("Deleting the player: {0}, id: {1}", player, player.Id);
+
             Player foundPlayer = this._cachedPlayers.FirstOrDefault(f => f.Id == player.Id);
 
             if (foundPlayer == null)
+            {
+                this.Logger.DebugFormat("Could not find the player: {0}, id: {1}", player, player.Id);
                 return Task.FromResult(false);
+            }
 
             this._cachedPlayers.Remove(foundPlayer);
 
             this._eventAggregator.PublishOnUIThread(new PlayerRemovedEvent(foundPlayer));
+            this.Logger.DebugFormat("Removed the player: {0}, id: {1}", player, player.Id);
 
             return Task.FromResult(true);
         }
@@ -80,14 +98,20 @@ namespace LeagueRecorder.Windows.Storage
         {
             Guard.AgainstNullArgument("player", player);
 
+            this.Logger.DebugFormat("Adding a new player: {0}", player);
+
             if (player.Id != null)
+            {
+                this.Logger.DebugFormat("Tried to store a player that is already stored. Id: {0}", player.Id);
                 throw new InvalidOperationException("The Player already has an ID.");
+            }
 
             player.Id = this._identityGenerator.Generate();
             this._cachedPlayers.Add(player);
 
             this._eventAggregator.PublishOnUIThread(new PlayerAddedEvent(player));
-
+            this.Logger.DebugFormat("Stored a new player with id: {0}", player.Id);
+            
             return Task.FromResult(new object());
         }
         #endregion
@@ -98,6 +122,7 @@ namespace LeagueRecorder.Windows.Storage
         /// </summary>
         void IStartable.Start()
         {
+            this.Logger.DebugFormat("Loading all players from the data-storage.");
             this._cachedPlayers = this._dataStorage.Retrieve<List<Player>>() ?? new List<Player>();
         }
         /// <summary>
@@ -105,6 +130,7 @@ namespace LeagueRecorder.Windows.Storage
         /// </summary>
         void IStartable.Stop()
         {
+            this.Logger.DebugFormat("Saving all players in the data-storage.");
             this._dataStorage.Store(this._cachedPlayers);
         }
         #endregion
