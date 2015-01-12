@@ -58,6 +58,8 @@ namespace LeagueRecorder.Windows.League
             if (this._recordingTimer != null)
                 throw new InvalidOperationException("Recording was already started. You need to dispose the result of this method before you can start a new recording.");
             
+            this.Logger.DebugFormat("Auto-recording matches of players: {0}", string.Join("|", players.Select(f => f.ToString())));
+
             this._players = players;
 
             this._recordingTimer = new Timer();
@@ -85,17 +87,27 @@ namespace LeagueRecorder.Windows.League
         {
             foreach (Player player in this._players)
             {
+                this.Logger.DebugFormat("Auto-recording player: {0}", player);
+
                 MatchInfo currentMatch = await this._recordingService.GetCurrentMatchInfoFromPlayerAsync(player);
 
                 if (currentMatch != null)
                 {
-                    bool recordingStarted = await this._recordingService.RequestRecordingOfMatchAsync(currentMatch);
-                    if (recordingStarted)
-                    {
-                        IEnumerable<MatchInfo> existingMatches = await this._matchStorage.GetMatchesAsync();
+                    this.Logger.DebugFormat("Found match '{0}' of player '{1}'.", currentMatch, player);
+                    this.Logger.DebugFormat("Looking if it already exists.");
 
-                        if (existingMatches.Any(f => f.GameId == currentMatch.GameId) == false)
-                        { 
+                    IEnumerable<MatchInfo> existingMatches = await this._matchStorage.GetMatchesAsync();
+
+                    if (existingMatches.Any(f => f.GameId == currentMatch.GameId) == false)
+                    { 
+                        this.Logger.DebugFormat("The match '{0}' does not already exist.", currentMatch);
+                        this.Logger.DebugFormat("Trying to record it.");
+
+                        bool recordingStarted = await this._recordingService.RequestRecordingOfMatchAsync(currentMatch);
+                        if (recordingStarted)
+                        {
+                            this.Logger.DebugFormat("Recording match '{0}'.", currentMatch);
+                        
                             await this._matchStorage.AddMatchAsync(currentMatch);
                         }
                     }
